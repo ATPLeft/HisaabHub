@@ -13,7 +13,7 @@ const app = express();
 
 // CORS configuration for production
 const allowedOrigins = [
-  'https://your-app-name.vercel.app',
+  'https://HisaabHub.vercel.app',
   'http://localhost:5173'
 ];
 
