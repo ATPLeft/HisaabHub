@@ -36,6 +36,16 @@ app.use('/api/groups', groupRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/payments', paymentRoutes);
 
+app.post('/api/setup-database', async (req, res) => {
+  try {
+    const setupScript = require('./scripts/setup-database');
+    await setupScript();
+    res.json({ message: 'Database setup completed successfully' });
+  } catch (error) {
+    console.error('Database setup failed:', error);
+    res.status(500).json({ error: 'Database setup failed' });
+  }
+});
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({ error: 'Endpoint not found' });
