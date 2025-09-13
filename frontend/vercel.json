@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "version": 2,
   "builds": [
@@ -17,3 +18,24 @@
   ],
   "outputDirectory": "dist"
 }
+=======
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/dist/$1"
+    }
+  ],
+  "outputDirectory": "dist"
+}
+>>>>>>> d6d4e3604288ef0d599475c86f7f05e9105e24b4
