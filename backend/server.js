@@ -38,7 +38,7 @@ app.use('/api/payments', paymentRoutes);
 
 app.post('/api/setup-database', async (req, res) => {
   try {
-    const setupScript = require('./scripts/setup-database');
+    const setupScript = require('./setup-database');
     await setupScript();
     res.json({ message: 'Database setup completed successfully' });
   } catch (error) {
