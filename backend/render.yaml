@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: hisaabhub-backend
+    env: node
+    plan: free
+    region: indore  # Choose closest to your users
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: BCRYPT_ROUNDS
+        value: 12
+      - key: DATABASE_URL
+        fromDatabase:
+          name: hisaabhub-db
+          property: connectionString
