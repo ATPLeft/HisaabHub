@@ -7,6 +7,7 @@ const groupRoutes = require('./routes/groups');
 const expenseRoutes = require('./routes/expenses');
 const paymentRoutes = require('./routes/payments');
 const errorHandler = require('./middleware/errorHandler');
+const allowedOrigins = [process.env.CLIENT_URL,'http://localhost:5173'];
 
 const app = express();
 
