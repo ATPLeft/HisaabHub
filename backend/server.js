@@ -8,21 +8,25 @@ const groupRoutes = require('./routes/groups');
 const expenseRoutes = require('./routes/expenses');
 const paymentRoutes = require('./routes/payments');
 const errorHandler = require('./middleware/errorHandler');
-const allowedOrigins = [process.env.CLIENT_URL,'http://localhost:5173'];
 
 const app = express();
 
-// CORS configuration for production
-const allowedOrigins = [
-  'https://HisaabHub.vercel.app',
-  'http://localhost:5173'
-];
-
+// CORS configuration - SIMPLIFIED VERSION
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+    // Allow requests with no origin (like mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+    
+    // Allow your Vercel frontend and local development
+    const allowedOrigins = [
+      process.env.CLIENT_URL || 'https://hisaab-hub-self.vercel.app',
+      'http://localhost:5173'
+    ];
+    
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.log('Blocked by CORS:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
@@ -44,7 +48,7 @@ app.get('/api/health', (req, res) => {
     ok: true, 
     app: 'HisaabHub',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
@@ -71,12 +75,3 @@ app.listen(PORT, () => {
   console.log(`HisaabHub backend listening on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
-<<<<<<< HEAD
-=======
-
-// Graceful shutdown
-process.on('SIGINT', () => {
-  console.log('\nShutting down gracefully...');
-  process.exit(0);
-});
->>>>>>> d6d4e3604288ef0d599475c86f7f05e9105e24b4
