@@ -8,7 +8,6 @@ const groupRoutes = require('./routes/groups');
 const expenseRoutes = require('./routes/expenses');
 const paymentRoutes = require('./routes/payments');
 const errorHandler = require('./middleware/errorHandler');
-const allowedOrigins = [process.env.CLIENT_URL,'http://localhost:5173'];
 
 const app = express();
 
@@ -71,12 +70,9 @@ app.listen(PORT, () => {
   console.log(`HisaabHub backend listening on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
-<<<<<<< HEAD
-=======
 
 // Graceful shutdown
 process.on('SIGINT', () => {
   console.log('\nShutting down gracefully...');
   process.exit(0);
 });
->>>>>>> d6d4e3604288ef0d599475c86f7f05e9105e24b4
