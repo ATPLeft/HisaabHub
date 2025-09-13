@@ -75,12 +75,9 @@ app.listen(PORT, () => {
   console.log(`HisaabHub backend listening on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
-<<<<<<< HEAD
 
 // Graceful shutdown
 process.on('SIGINT', () => {
   console.log('\nShutting down gracefully...');
   process.exit(0);
 });
-=======
->>>>>>> 680b72715f14077fefe7b3e00a1bd711a1c3b3f9
