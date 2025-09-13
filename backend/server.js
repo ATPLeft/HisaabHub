@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
@@ -10,14 +11,31 @@ const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
-// CORS configuration
+// CORS configuration for production
+const allowedOrigins = [
+  'https://HisaabHub.vercel.app',
+  'http://localhost:5173'
+];
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+// API routes
+app.use('/api/auth', authRoutes);
+app.use('/api/groups', groupRoutes);
+app.use('/api/expenses', expenseRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -29,11 +47,14 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// API routes
-app.use('/api/auth', authRoutes);
-app.use('/api/groups', groupRoutes);
-app.use('/api/expenses', expenseRoutes);
-app.use('/api/payments', paymentRoutes);
+// Serve static files in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+  
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+  });
+}
 
 // 404 handler
 app.use('*', (req, res) => {
@@ -47,11 +68,5 @@ const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => {
   console.log(`HisaabHub backend listening on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV}`);
-});
-
-// Graceful shutdown
-process.on('SIGINT', () => {
-  console.log('\nShutting down gracefully...');
-  process.exit(0);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
