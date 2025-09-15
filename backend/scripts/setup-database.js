@@ -3,13 +3,14 @@ require('dotenv').config();
 
 async function setupDatabase() {
   console.log('Starting database setup...');
+  console.log('NODE_ENV:', process.env.NODE_ENV);
+  console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'Exists' : 'Missing');
   
   // Create a connection pool
   const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' && process.env.DATABASE_URL.includes('render.com') ? 
-    { rejectUnauthorized: false } : false
-});
+    connectionString: process.env.DATABASE_URL,
+    ssl: false // Force disable SSL for Render internal connections
+  });
 
   let client;
   
