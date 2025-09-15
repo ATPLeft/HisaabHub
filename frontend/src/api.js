@@ -1,14 +1,12 @@
 import axios from 'axios';
 
-// Use environment variable with fallback for local development
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 
+                     window.location.origin.replace(/:\d+$/, ':8000');
 
 const api = axios.create({ 
-  baseURL: `${API_BASE_URL}/api`
+  baseURL: `${API_BASE_URL}/api`,
+  timeout: 10000
 });
-
-// Add request timeout
-api.defaults.timeout = 10000;
 
 // Add retry mechanism for failed requests
 api.interceptors.response.use(

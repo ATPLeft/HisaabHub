@@ -20,7 +20,7 @@ app.use(cors({
     
     // Allow your Vercel frontend and local development
     const allowedOrigins = [
-      process.env.CLIENT_URL || 'https://hisaab-hub-self.vercel.app',
+      process.env.CLIENT_URL || 'https://hisaab-hub-livid.vercel.app/',
       'http://localhost:5173'
     ];
     
