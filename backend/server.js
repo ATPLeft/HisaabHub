@@ -8,29 +8,32 @@ const groupRoutes = require('./routes/groups');
 const expenseRoutes = require('./routes/expenses');
 const paymentRoutes = require('./routes/payments');
 const errorHandler = require('./middleware/errorHandler');
+const setupDatabase = require('./scripts/setup-database'); // Import migration script
 
 const app = express();
 
-// CORS configuration
-const corsOptions = {
+// CORS configuration - SIMPLIFIED VERSION
+app.use(cors({
   origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, Postman, etc.)
     if (!origin) return callback(null, true);
     
+    // Allow your Vercel frontend and local development
     const allowedOrigins = [
-      process.env.CLIENT_URL || 'https://your-app-name.vercel.app',
+      process.env.CLIENT_URL || 'https://hisaab-hub-self.vercel.app',
       'http://localhost:5173'
     ];
     
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.log('Blocked by CORS:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true
-};
+}));
 
-app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -67,12 +70,31 @@ app.use('*', (req, res) => {
 // Error handling middleware
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 8000;
+// Initialize application with database setup
+async function initializeApp() {
+  try {
+    // Run database migration in production
+    if (process.env.NODE_ENV === 'production') {
+      console.log('Running database migration...');
+      await setupDatabase();
+      console.log('Database migration completed successfully');
+    }
+    
+    // Start server
+    const PORT = process.env.PORT || 8000;
+    app.listen(PORT, () => {
+      console.log(`HisaabHub backend listening on port ${PORT}`);
+      console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    });
+    
+  } catch (error) {
+    console.error('Failed to initialize application:', error);
+    process.exit(1);
+  }
+}
 
-app.listen(PORT, () => {
-  console.log(`HisaabHub backend listening on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-});
+// Start the application
+initializeApp();
 
 // Graceful shutdown
 process.on('SIGINT', () => {
