@@ -7,6 +7,21 @@ const api = axios.create({
   baseURL: `${API_BASE_URL}/api`
 });
 
+// Add request timeout
+api.defaults.timeout = 10000;
+
+// Add retry mechanism for failed requests
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.code === 'ECONNABORTED' || !error.response) {
+      console.error('Network error or timeout:', error.message);
+      // You can show a user-friendly message here
+    }
+    return Promise.reject(error);
+  }
+);
+
 api.interceptors.request.use(config => { 
   const token = localStorage.getItem('token'); 
   if (token) config.headers.Authorization = `Bearer ${token}`; 
