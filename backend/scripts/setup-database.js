@@ -6,12 +6,10 @@ async function setupDatabase() {
   
   // Create a connection pool
   const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    // Add SSL for production (required for Railway)
-    ssl: process.env.NODE_ENV === 'production' ? { 
-      rejectUnauthorized: false 
-    } : false
-  });
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' && process.env.DATABASE_URL.includes('render.com') ? 
+    { rejectUnauthorized: false } : false
+});
 
   let client;
   

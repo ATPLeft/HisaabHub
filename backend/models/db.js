@@ -3,10 +3,9 @@ require('dotenv').config();
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  // Add SSL for production - essential for Railway
-  ssl: process.env.NODE_ENV === 'production' ? { 
-    rejectUnauthorized: false 
-  } : false
+  // SSL is not needed for Render's internal database connections
+  ssl: process.env.NODE_ENV === 'production' && process.env.DATABASE_URL.includes('render.com') ? 
+    { rejectUnauthorized: false } : false
 });
 
 // Test connection
@@ -16,7 +15,6 @@ pool.on('connect', () => {
 
 pool.on('error', (err) => {
   console.error('Database connection error:', err);
-  process.exit(-1);
 });
 
 module.exports = {
