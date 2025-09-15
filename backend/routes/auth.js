@@ -41,8 +41,15 @@ router.post('/signup', validateSignup, async (req, res) => {
       token, 
       user: { id: user.id, name: user.name, email: user.email } 
     });
+    
   } catch (err) {
     console.error('Signup error:', err);
+    
+    // Specific error handling for database issues
+    if (err.code === 'ECONNREFUSED') {
+      return res.status(503).json({ error: 'Database connection failed. Please try again later.' });
+    }
+    
     res.status(500).json({ error: 'Internal server error during registration' });
   }
 });
@@ -80,8 +87,15 @@ router.post('/login', validateLogin, async (req, res) => {
       token, 
       user: { id: user.id, name: user.name, email: user.email } 
     });
+    
   } catch (err) {
     console.error('Login error:', err);
+    
+    // Specific error handling for database issues
+    if (err.code === 'ECONNREFUSED') {
+      return res.status(503).json({ error: 'Database connection failed. Please try again later.' });
+    }
+    
     res.status(500).json({ error: 'Internal server error during login' });
   }
 });

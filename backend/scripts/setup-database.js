@@ -7,15 +7,19 @@ async function setupDatabase() {
   // Create a connection pool
   const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    // Add SSL for production
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+    // Add SSL for production (required for Railway)
+    ssl: process.env.NODE_ENV === 'production' ? { 
+      rejectUnauthorized: false 
+    } : false
   });
 
+  let client;
+  
   try {
     console.log('Connecting to database...');
     
     // Test connection
-    const client = await pool.connect();
+    client = await pool.connect();
     console.log('Database connection successful');
     
     // Begin transaction
@@ -133,7 +137,9 @@ async function setupDatabase() {
     
   } catch (error) {
     // Rollback transaction on error
-    await client.query('ROLLBACK');
+    if (client) {
+      await client.query('ROLLBACK');
+    }
     console.error('Database setup failed:', error.message);
     throw error;
   } finally {
