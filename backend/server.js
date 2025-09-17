@@ -12,26 +12,39 @@ const setupDatabase = require('./scripts/setup-database'); // Import migration s
 
 const app = express();
 
-// CORS configuration - SIMPLIFIED VERSION
+// IMPROVED CORS configuration
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps, Postman, etc.)
     if (!origin) return callback(null, true);
     
-    // Allow your Vercel frontend and local development
+    // Allow your Vercel frontend (with and without www), local development, and all Vercel subdomains
     const allowedOrigins = [
-      process.env.CLIENT_URL || 'https://hisaab-hub-livid.vercel.app/',
-      'http://localhost:5173'
+      'https://hisaab-hub-livid.vercel.app', // Your main Vercel domain
+      'http://localhost:5173',               // Local development
+      /\.vercel\.app$/,                      // All Vercel deployments (*.vercel.app)
     ];
     
-    if (allowedOrigins.includes(origin)) {
+    // Check if origin matches any allowed pattern
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (typeof allowed === 'string') {
+        return origin === allowed;
+      } else if (allowed instanceof RegExp) {
+        return allowed.test(origin);
+      }
+      return false;
+    });
+    
+    if (isAllowed) {
       callback(null, true);
     } else {
       console.log('Blocked by CORS:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json({ limit: '10mb' }));
